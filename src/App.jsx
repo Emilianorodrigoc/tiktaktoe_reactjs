@@ -5,12 +5,23 @@ import { Turns } from "./components/Turns.jsx"
 import { WinnerModal } from "./components/WinnerModal.jsx"
 import { turns } from "./constants.js"
 import { checkEndGame, checkWinner } from "./logic/board.js"
+import { resetGameToStorage, saveGameToStorage } from "./logic/storage.js"
 
 
 function App() {
   // Creación de estados
-  const [board, setBoard] = useState(Array(9).fill(null))
-  const [turn, setTurn] = useState(turns.X)
+  const [board, setBoard] = useState(() => {
+    const boardFromStorage = window.localStorage.getItem('board')
+    return boardFromStorage
+      ? JSON.parse(boardFromStorage)
+      : Array(9).fill(null)
+  })
+
+  const [turn, setTurn] = useState(() => {
+    const turnFromStorage = window.localStorage.getItem('turn')
+    return turnFromStorage ?? turns.X
+  })
+
   const [winner, setWinner] = useState(null)
 
   //Reseteo de juego
@@ -18,6 +29,7 @@ function App() {
     setBoard(Array(9).fill(null))
     setTurn(turns.X)
     setWinner(null)
+    resetGameToStorage()
   }
 
 
@@ -36,7 +48,10 @@ function App() {
     // Verificamos que se asigne el turno nuevo correctamente
     const newTurn = turn == turns.X ? turns.O : turns.X
     setTurn(newTurn)
-
+    saveGameToStorage({
+      board: newBoard,
+      turn: newTurn
+    })
     const newWinner = checkWinner(newBoard)
 
     if (newWinner) {
@@ -53,7 +68,7 @@ function App() {
       <h1>Tik tak toe</h1>
       <button onClick={resetGame}>Reset del juego</button>
       <Board board={board} updateBoard={updateBoard} />
-      <Turns turn = {turn} />
+      <Turns turn={turn} />
       <WinnerModal resetGame={resetGame} winner={winner} />
     </main>
   )
