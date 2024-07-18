@@ -1,7 +1,7 @@
 import confetti from "canvas-confetti"
 import { useState } from 'react'
 import { Board } from "./components/Board.jsx"
-import { Square } from "./components/Square.jsx"
+import { Turns } from "./components/Turns.jsx"
 import { WinnerModal } from "./components/WinnerModal.jsx"
 import { turns } from "./constants.js"
 import { checkEndGame, checkWinner } from "./logic/board.js"
@@ -53,14 +53,7 @@ function App() {
       <h1>Tik tak toe</h1>
       <button onClick={resetGame}>Reset del juego</button>
       <Board board={board} updateBoard={updateBoard} />
-      <section className='turn'>
-        <Square isSelected={turn == turns.X}>
-          {turns.X}
-        </Square>
-        <Square isSelected={turn == turns.O}>
-          {turns.O}
-        </Square>
-      </section>
+      <Turns turn = {turn} />
       <WinnerModal resetGame={resetGame} winner={winner} />
     </main>
   )
