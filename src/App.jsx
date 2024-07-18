@@ -1,3 +1,4 @@
+import confetti from "canvas-confetti"
 import { useState } from 'react'
 
 /* Definimos los turnos */
@@ -25,7 +26,7 @@ const Square = ({ children, isSelected, updateBoard, index }) => {
 }
 
 
-
+// Posibilidades de ganar
 const winnerCombos = [
   [0, 1, 2],
   [3, 4, 5],
@@ -45,6 +46,16 @@ function App() {
 
   const [winner, setWinner] = useState(null)
 
+  const resetGame = () => {
+    setBoard(Array(9).fill(null))
+    setTurn(turns.X)
+    setWinner(null)
+  }
+
+  const checkEndGame = (newBoard) => {
+    return newBoard.every((square)=> square != null)
+  }
+  
   const updateBoard = (index) => {
 
     // Verificamos que no se sobreescriba la información
@@ -64,7 +75,10 @@ function App() {
     const newWinner = checkWinner(newBoard)
 
     if (newWinner) {
+      confetti()
       setWinner(newWinner)
+    } else if (checkEndGame(newBoard)){
+      setWinner(false)
     }
 
   }
@@ -88,6 +102,7 @@ function App() {
   return (
     <main className='board'>
       <h1>Tik tak toe</h1>
+      <button onClick={resetGame}>Reset del juego</button>
       <section className='game'>
         {
           board.map((_, index) => {
@@ -111,6 +126,26 @@ function App() {
           {turns.O}
         </Square>
       </section>
+      {
+        winner != null &&
+        <section className='winner'>
+          <div className="text">
+            <h2>
+              {
+                winner == false
+                  ? 'Empate'
+                  : 'Ganó'
+              }
+            </h2>
+            <header className='win'>
+              {winner && <Square>{winner}</Square>}
+            </header>
+            <footer>
+              <button onClick={resetGame}>Empezar de nuevo</button>
+            </footer>
+          </div>
+        </section>
+      }
     </main>
   )
 }
